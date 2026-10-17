@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Si-Juang Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">SJ</div>
+          <div>
+            <h1>Si-Juang</h1>
+            <p>Sistem Integrasi Administrasi</p>
+          </div>
+        </div>
+
+        <nav class="nav-group">
+          <p class="nav-group-title">Navigasi</p>
+          <div class="nav-list">
+            <button class="nav-item active" type="button"><span class="emoji">01</span> Dashboard</button>
+            <button class="nav-item" type="button"><span class="emoji">02</span> Pelayanan & Surat</button>
+            <button class="nav-item" type="button"><span class="emoji">03</span> Manajemen Operator</button>
+            <button class="nav-item" type="button"><span class="emoji">04</span> Leaderboard</button>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-row">
+            <div class="user-badge">ADM</div>
+            <div>
+              <div class="user-name">Admin Kecamatan</div>
+            </div>
+          </div>
+          <select class="role-select" aria-label="Pilih level">
+            <option>Level: Administrator</option>
+            <option>Level: Operator Gampong</option>
+            <option>Level: Publik</option>
+          </select>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="page-title">
+            <h2>Dashboard Analitik</h2>
+            <p>Si-Juang Integration System</p>
+          </div>
+          <div class="badge-status">Mode Admin</div>
+        </header>
+
+        <section class="dashboard-section">
+          <div class="hero-box">
+            <div class="page-title">
+              <h2>Ringkasan dokumen dan status surat</h2>
+              <p>Data dapat bertambah atau berkurang saat dokumen masuk atau dibatalkan.</p>
+            </div>
+
+            <div class="hero-grid">
+              <div class="stats-grid" id="statsGrid"></div>
+
+              <div class="panel status-check">
+                <h3>Cek status surat</h3>
+                <form id="statusForm">
+                  <input id="nomorSurat" type="text" placeholder="Masukkan nomor surat" />
+                  <button class="primary-btn" type="submit">Cek</button>
+                </form>
+                <div id="statusResult" class="result-box info">Silakan masukkan nomor surat untuk mengecek status.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workflow-grid">
+            <div class="panel">
+              <h3>Pengiriman berkas operator</h3>
+              <p class="muted">Berkas tetap berada di Google Drive operator. Bagikan tautannya agar admin dapat mengunduh dan memproses berkas.</p>
+              <form id="documentForm" class="stack-form">
+                <label for="docNo">Nomor / kode surat</label>
+                <input id="docNo" type="text" placeholder="Contoh: SJ-2026-000123" required />
+                <label for="docGampong">Nama gampong</label>
+                <input id="docGampong" type="text" placeholder="Nama gampong" required />
+                <label for="docType">Jenis surat</label>
+                <input id="docType" type="text" placeholder="Contoh: SKU" required />
+                <label for="docDriveLink">Tautan Google Drive</label>
+                <input id="docDriveLink" type="url" placeholder="https://drive.google.com/..." required />
+                <button class="primary-btn" type="submit">Catat Pengajuan</button>
+              </form>
+            </div>
+
+            <div class="panel">
+              <h3>Kirim berkas melalui WhatsApp</h3>
+              <p class="muted">Admin mengunduh berkas dari Drive, lalu memilih berkas di bawah. WhatsApp Web dibuka dengan pesan siap kirim; lampiran tetap perlu ditambahkan manual di WhatsApp.</p>
+              <form id="whatsappForm" class="stack-form">
+                <label for="waRecipient">Nama penerima (opsional)</label>
+                <input id="waRecipient" type="text" placeholder="Nama Geuchik / pemohon" />
+                <label for="waPhone">Nomor WhatsApp tujuan</label>
+                <input id="waPhone" type="tel" placeholder="62812xxxxxxxx" required />
+                <label for="waDocCode">Kode / nomor surat</label>
+                <input id="waDocCode" type="text" placeholder="Dibuat otomatis jika kosong" />
+                <label for="waFile">Berkas yang sudah diunduh</label>
+                <input id="waFile" type="file" />
+                <div id="waFileName" class="small-text">Berkas belum dipilih. Lampirkan berkas lagi di WhatsApp Web.</div>
+                <label for="waMessage">Isi pesan (bisa diedit)</label>
+                <textarea id="waMessage" rows="7"></textarea>
+                <button class="primary-btn" type="submit">Buka WhatsApp Web</button>
+              </form>
+              <div id="waResult" class="result-box info" aria-live="polite">Isi nomor tujuan untuk menyiapkan pesan WhatsApp.</div>
+            </div>
+          </div>
+
+          <div class="admin-actions">
+            <button id="addSampleDoc" class="secondary-btn" type="button">Tambah data contoh</button>
+            <button id="cancelLastDoc" class="danger-btn" type="button">Batalkan pengajuan terbaru</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nomor Surat</th>
+                  <th>Tanggal</th>
+                  <th>Gampong</th>
+                  <th>Jenis</th>
+                  <th>Link Drive</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>

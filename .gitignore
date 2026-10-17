@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+.vercel/
+node_modules/
+dist/
+*.log
+.DS_Store
+Thumbs.db
+service-account*.json
+*credentials*.json

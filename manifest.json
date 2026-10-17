@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "SI-JUANG Operator",
+  "version": "1.0.0",
+  "description": "Extension operator untuk mengirim berkas ke dashboard SI-JUANG.",
+  "permissions": ["storage"],
+  "host_permissions": [],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon-16.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  }
+}
