@@ -20,6 +20,28 @@ const whatsappForm = document.getElementById('whatsappForm');
 const waMessage = document.getElementById('waMessage');
 const waDocCode = document.getElementById('waDocCode');
 const waFile = document.getElementById('waFile');
+const leaderboardBody = document.getElementById('leaderboardBody');
+const pageTitle = document.getElementById('pageTitle');
+const pageSubtitle = document.getElementById('pageSubtitle');
+
+const views = {
+  dashboard: {
+    title: 'Dashboard Analitik',
+    subtitle: 'Ringkasan statistik dan pencarian status surat.'
+  },
+  pelayanan: {
+    title: 'Pelayanan & Surat',
+    subtitle: 'Catat pengajuan, lihat tautan Drive, dan siapkan pesan WhatsApp.'
+  },
+  operator: {
+    title: 'Manajemen Akun Kecamatan',
+    subtitle: 'Pengelolaan akun staf kecamatan akan tersedia setelah backend aktif.'
+  },
+  leaderboard: {
+    title: 'Leaderboard Pengajuan',
+    subtitle: 'Ringkasan jumlah pengajuan per gampong dari data browser ini.'
+  }
+};
 
 function loadDocuments() {
   try {
@@ -103,6 +125,44 @@ function renderTable() {
   }).join('');
 }
 
+function renderLeaderboard() {
+  const counts = new Map();
+  state.documents.forEach((doc) => {
+    if (doc.status === 'Batal') return;
+    counts.set(doc.gampong, (counts.get(doc.gampong) || 0) + 1);
+  });
+
+  const rows = Array.from(counts.entries())
+    .sort((first, second) => second[1] - first[1] || first[0].localeCompare(second[0], 'id'))
+    .map(([gampong, total], index) => `
+      <tr>
+        <td>${index + 1}</td>
+        <td><strong>${escapeHtml(gampong)}</strong></td>
+        <td>${total}</td>
+      </tr>
+    `);
+
+  leaderboardBody.innerHTML = rows.length
+    ? rows.join('')
+    : '<tr><td colspan="3" class="muted">Belum ada pengajuan.</td></tr>';
+}
+
+function showView(viewName) {
+  if (!views[viewName]) return;
+
+  document.querySelectorAll('.view-page').forEach((view) => {
+    view.classList.toggle('hidden', view.id !== `view-${viewName}`);
+  });
+  document.querySelectorAll('.nav-item[data-view]').forEach((button) => {
+    const isActive = button.dataset.view === viewName;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-current', isActive ? 'page' : 'false');
+  });
+
+  pageTitle.textContent = views[viewName].title;
+  pageSubtitle.textContent = views[viewName].subtitle;
+}
+
 function getDriveUrl(value) {
   try {
     const url = new URL(value);
@@ -138,6 +198,7 @@ function refreshDocuments() {
   saveDocuments();
   renderStats();
   renderTable();
+  renderLeaderboard();
 }
 
 function createReferenceCode() {
@@ -254,31 +315,45 @@ function handleWhatsAppSubmit(event) {
   result.className = 'result-box success';
 }
 
-statusForm.addEventListener('submit', handleStatusCheck);
-documentForm.addEventListener('submit', handleDocumentSubmit);
-whatsappForm.addEventListener('submit', handleWhatsAppSubmit);
-addSampleDocBtn.addEventListener('click', addSampleDocument);
-cancelLastDocBtn.addEventListener('click', () => {
-  if (!state.documents.length) {
-    showStatusResult('Belum ada data yang bisa dibatalkan.', 'error');
-    return;
-  }
-  cancelDocument(state.documents[0].id);
-});
-waFile.addEventListener('change', () => {
-  document.getElementById('waFileName').textContent = waFile.files[0]
-    ? `Berkas dipilih: ${waFile.files[0].name}. WhatsApp Web tidak dapat menerima lampiran otomatis dari halaman ini.`
-    : 'Berkas belum dipilih. Lampirkan berkas lagi di WhatsApp Web.';
-});
-document.getElementById('waRecipient').addEventListener('input', refreshWhatsAppMessage);
-waDocCode.addEventListener('input', refreshWhatsAppMessage);
-document.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-action="cancel"]');
-  if (button) cancelDocument(button.dataset.id);
-});
+let dashboardInitialized = false;
 
-waDocCode.value = createReferenceCode();
-refreshWhatsAppMessage();
-renderStats();
-renderTable();
-showStatusResult('Silakan masukkan nomor surat untuk mengecek status.', 'info');
+function initializeDashboard() {
+  if (dashboardInitialized) return;
+  dashboardInitialized = true;
+
+  statusForm.addEventListener('submit', handleStatusCheck);
+  document.querySelectorAll('.nav-item[data-view]').forEach((button) => {
+    button.addEventListener('click', () => showView(button.dataset.view));
+  });
+  documentForm.addEventListener('submit', handleDocumentSubmit);
+  whatsappForm.addEventListener('submit', handleWhatsAppSubmit);
+  addSampleDocBtn.addEventListener('click', addSampleDocument);
+  cancelLastDocBtn.addEventListener('click', () => {
+    if (!state.documents.length) {
+      showStatusResult('Belum ada data yang bisa dibatalkan.', 'error');
+      return;
+    }
+    cancelDocument(state.documents[0].id);
+  });
+  waFile.addEventListener('change', () => {
+    document.getElementById('waFileName').textContent = waFile.files[0]
+      ? `Berkas dipilih: ${waFile.files[0].name}. WhatsApp Web tidak dapat menerima lampiran otomatis dari halaman ini.`
+      : 'Berkas belum dipilih. Lampirkan berkas lagi di WhatsApp Web.';
+  });
+  document.getElementById('waRecipient').addEventListener('input', refreshWhatsAppMessage);
+  waDocCode.addEventListener('input', refreshWhatsAppMessage);
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-action="cancel"]');
+    if (button) cancelDocument(button.dataset.id);
+  });
+
+  waDocCode.value = createReferenceCode();
+  refreshWhatsAppMessage();
+  renderStats();
+  renderTable();
+  renderLeaderboard();
+  showView('dashboard');
+  showStatusResult('Silakan masukkan nomor surat untuk mengecek status.', 'info');
+}
+
+document.addEventListener('sijuang:authenticated', initializeDashboard);
