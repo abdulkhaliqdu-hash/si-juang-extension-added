@@ -7,7 +7,24 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <main id="loginView" class="login-view">
+      <section class="login-card">
+        <div class="brand-mark login-brand">SJ</div>
+        <p class="login-eyebrow">PORTAL KECAMATAN KOTA JUANG</p>
+        <h1>Masuk ke SI-JUANG</h1>
+        <p class="muted">Dashboard ini khusus staf kecamatan. Operator gampong mengajukan berkas melalui ekstensi browser.</p>
+        <form id="adminLoginForm" class="stack-form" novalidate>
+          <label for="adminEmail">Email staf kecamatan</label>
+          <input id="adminEmail" type="email" autocomplete="username" required />
+          <label for="adminPassword">Kata sandi</label>
+          <input id="adminPassword" type="password" autocomplete="current-password" required />
+          <button id="adminLoginButton" class="primary-btn" type="submit">Masuk</button>
+        </form>
+        <div id="loginMessage" class="result-box info" aria-live="polite">Login membutuhkan konfigurasi Supabase dan akun staf kecamatan yang sudah diizinkan.</div>
+      </section>
+    </main>
+
+    <div id="appShell" class="app-shell hidden">
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">SJ</div>
@@ -20,10 +37,10 @@
         <nav class="nav-group">
           <p class="nav-group-title">Navigasi</p>
           <div class="nav-list">
-            <button class="nav-item active" type="button"><span class="emoji">01</span> Dashboard</button>
-            <button class="nav-item" type="button"><span class="emoji">02</span> Pelayanan & Surat</button>
-            <button class="nav-item" type="button"><span class="emoji">03</span> Manajemen Operator</button>
-            <button class="nav-item" type="button"><span class="emoji">04</span> Leaderboard</button>
+            <button class="nav-item active" type="button" data-view="dashboard"><span class="emoji">01</span> Dashboard</button>
+            <button class="nav-item" type="button" data-view="pelayanan"><span class="emoji">02</span> Pelayanan & Surat</button>
+            <button class="nav-item" type="button" data-view="operator"><span class="emoji">03</span> Manajemen Akun Kecamatan</button>
+            <button class="nav-item" type="button" data-view="leaderboard"><span class="emoji">04</span> Leaderboard</button>
           </div>
         </nav>
 
@@ -31,27 +48,24 @@
           <div class="user-row">
             <div class="user-badge">ADM</div>
             <div>
-              <div class="user-name">Admin Kecamatan</div>
+              <div class="user-name" id="signedInUser">Staf Kecamatan</div>
+              <div class="sidebar-caption">Operator gampong menggunakan ekstensi</div>
             </div>
           </div>
-          <select class="role-select" aria-label="Pilih level">
-            <option>Level: Administrator</option>
-            <option>Level: Operator Gampong</option>
-            <option>Level: Publik</option>
-          </select>
+          <button id="logoutButton" class="logout-button" type="button">Keluar</button>
         </div>
       </aside>
 
       <main class="main">
         <header class="topbar">
           <div class="page-title">
-            <h2>Dashboard Analitik</h2>
-            <p>Si-Juang Integration System</p>
+            <h2 id="pageTitle">Dashboard Analitik</h2>
+            <p id="pageSubtitle">Ringkasan statistik dan pencarian status surat.</p>
           </div>
-          <div class="badge-status">Mode Admin</div>
+          <div class="badge-status">Portal Kecamatan</div>
         </header>
 
-        <section class="dashboard-section">
+        <section class="dashboard-section view-page" id="view-dashboard">
           <div class="hero-box">
             <div class="page-title">
               <h2>Ringkasan dokumen dan status surat</h2>
@@ -72,6 +86,9 @@
             </div>
           </div>
 
+        </section>
+
+        <section class="dashboard-section view-page hidden" id="view-pelayanan">
           <div class="workflow-grid">
             <div class="panel">
               <h3>Pengiriman berkas operator</h3>
@@ -132,9 +149,37 @@
             </table>
           </div>
         </section>
+
+        <section class="dashboard-section view-page hidden" id="view-operator">
+          <div class="panel">
+            <h2>Manajemen Akun Kecamatan</h2>
+            <p class="muted">Daftar akun staf kecamatan dan pengaturan hak akses memerlukan backend SI-JUANG. Menu ini belum dapat mengelola akun sungguhan.</p>
+            <div class="notice-box">
+              <strong>Belum terhubung ke backend</strong>
+              <p>Untuk keamanan, akun staf tidak dibuat atau diubah dari halaman publik ini. Setelah Supabase Auth dan kebijakan admin disiapkan, halaman ini dapat menampilkan serta mengelola akun kecamatan secara aman. Akun operator gampong hanya untuk ekstensi browser.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-section view-page hidden" id="view-leaderboard">
+          <div class="panel">
+            <h2>Leaderboard Pengajuan</h2>
+            <p class="muted">Peringkat dihitung dari pengajuan berstatus aktif pada data browser ini. Data belum dibagikan antar perangkat.</p>
+            <div class="table-wrap leaderboard-wrap">
+              <table>
+                <thead>
+                  <tr><th>Peringkat</th><th>Gampong</th><th>Jumlah Pengajuan</th></tr>
+                </thead>
+                <tbody id="leaderboardBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
 
+    <script src="config.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>

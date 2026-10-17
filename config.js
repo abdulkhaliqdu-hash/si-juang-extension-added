@@ -1,2 +1,2 @@
-const SIJUANG_WEB_URL = 'https://YOUR-PROJECT.vercel.app';
-const SIJUANG_API_URL = 'https://YOUR-PROJECT.vercel.app/api/public/kirim';
+const SUPABASE_URL = 'https://pgjfslpfgogpwnitsqzo.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_q8ny4nFjbscvAjH_iAq43A_DpsHwOTm';
