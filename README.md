@@ -15,7 +15,7 @@ Web dashboard ditujukan untuk staf kecamatan. Operator gampong hanya menggunakan
 
 ## Status saat ini
 
-Dashboard admin membaca pengajuan dan statistik dari tabel Supabase `submissions` menggunakan akun `kecamatan_admin`. Perubahan status Batal juga disimpan ke database. Ekstensi operator memakai Supabase Auth dan RPC `submit_document`; jalankan `supabase/operator-submissions.sql` sebelum menggunakan alur pengajuan.
+Dashboard admin membaca pengajuan dan statistik dari tabel Supabase `submissions` menggunakan akun `kecamatan_admin`. Admin dapat mengubah status pengajuan (Verifikasi, Srikandi, Selesai TTE, Ditolak, atau Batal) dari kolom **Ubah status**; perubahan langsung disimpan ke database. Riwayat ekstensi memuat status terbaru saat dibuka dan diperbarui otomatis setiap 30 detik selama popup terbuka. Ekstensi operator memakai Supabase Auth dan RPC `submit_document`; jalankan `supabase/operator-submissions.sql` sebelum menggunakan alur pengajuan.
 
 Alur yang direncanakan:
 
@@ -51,7 +51,7 @@ SQL memberi user hak baca hanya untuk profil miliknya sendiri; pembuatan/perubah
 3. Karena ini situs statis tanpa proses build, biarkan Build Command dan Output Directory kosong/default.
 4. Deploy.
 
-Folder ekstensi bukan bagian dari situs dashboard yang disajikan Vercel. Setelah backend tersedia, ekstensi dapat dimuat di Chrome melalui `chrome://extensions` → **Developer mode** → **Load unpacked** → pilih folder `extension`.
+Folder ekstensi bukan bagian dari situs dashboard yang disajikan Vercel. Setelah backend tersedia, ekstensi dapat dimuat di Chrome melalui `chrome://extensions` → **Developer mode** → **Load unpacked** → pilih folder `extension`. Setelah memperbarui source ekstensi, klik **Reload** pada kartu ekstensi di halaman tersebut.
 
 ## Langkah backend berikutnya
 
@@ -71,7 +71,7 @@ Backend direncanakan menggunakan Supabase untuk autentikasi dan penyimpanan meta
 4. Gunakan nilai project URL dan **publishable key** pada `extension/config.js`. Key publishable memang terlihat pada extension; jangan pernah menaruh `service_role`/secret key di extension.
 5. Untuk uji lokal, buka `chrome://extensions`, aktifkan **Developer mode**, pilih **Load unpacked**, lalu pilih folder `extension`.
 6. Login dengan akun operator, isi formulir, dan pastikan pemilik Drive membagikan berkas ke admin kecamatan. Extension hanya menyimpan tautan, bukan mengunggah file.
-7. Ekstensi menampilkan 10 pengajuan terakhir dari akun operator yang sedang masuk. Riwayat memerlukan tabel `submissions` dan policy operator pada SQL migrasi.
+7. Ekstensi menampilkan 10 pengajuan terakhir dari akun operator yang sedang masuk. Status diperbarui saat popup dibuka dan otomatis setiap 30 detik selama popup tetap terbuka; tombol **Muat ulang** dapat digunakan untuk mengambil perubahan lebih cepat. Riwayat memerlukan tabel `submissions` dan policy operator pada SQL migrasi.
 8. Jika daftar jenis surat atau aturan database berubah, jalankan ulang SQL yang sudah diperbarui di `supabase/operator-submissions.sql`, lalu muat ulang ekstensi melalui `chrome://extensions` → **Reload**. Jika pengiriman gagal, ekstensi menampilkan pesan database beserta kode error untuk membantu diagnosis.
 
 Manifest meminta permission `storage` untuk menyimpan token login sementara pada `chrome.storage.session`. Host permission dibatasi ke satu project Supabase untuk autentikasi dan pengiriman metadata. Tidak ada script/CDN/remote executable code.
