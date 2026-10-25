@@ -28,8 +28,14 @@ function getServerError(response, payload, fallback) {
   const code = typeof payload.code === 'string' ? payload.code : '';
   const description = [message, details, hint].filter(Boolean).join(' ');
 
-  if (response.status === 404 || code === 'PGRST202') {
+  if (code === 'PGRST202') {
     return 'Fungsi database SI-JUANG belum ditemukan. Jalankan ulang operator-submissions.sql di Supabase, lalu muat ulang skema API.';
+  }
+  if (code === 'PGRST205' || (response.status === 404 && fallback.includes('Riwayat'))) {
+    return 'Tabel riwayat belum ditemukan. Jalankan operator-submissions.sql di Supabase.';
+  }
+  if (response.status === 404) {
+    return `Endpoint database tidak ditemukan (HTTP 404). Jalankan operator-submissions.sql di Supabase dan periksa kembali skema API.${description ? ` ${description}` : ''}`;
   }
   if (code === '23514') {
     return `Jenis surat belum diizinkan database. Jalankan ulang operator-submissions.sql. ${description}`.trim();
