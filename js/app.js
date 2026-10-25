@@ -1,5 +1,6 @@
 const SESSION_KEY = 'sijuang-admin-session';
 const PAGE_SIZE = 500;
+const SUBMISSION_STATUSES = ['Verifikasi', 'Srikandi', 'Selesai TTE', 'Ditolak', 'Batal'];
 const state = { documents: [], isLoading: false, loadError: '' };
 
 const statsGrid = document.getElementById('statsGrid');
@@ -203,9 +204,17 @@ function renderTable() {
     const driveCell = safeLink
       ? `<a class="link-btn" href="${escapeHtml(safeLink)}" target="_blank" rel="noopener noreferrer">Buka Drive</a>`
       : '<span class="muted">Tautan tidak valid</span>';
-    const action = document.status === 'Batal'
-      ? '<span class="muted">—</span>'
-      : `<button class="danger-btn" type="button" data-action="cancel" data-id="${escapeHtml(document.id)}">Batalkan</button>`;
+    const statusOptions = SUBMISSION_STATUSES.map((status) => `
+      <option value="${escapeHtml(status)}"${document.status === status ? ' selected' : ''}>${escapeHtml(status)}</option>
+    `).join('');
+    const action = `
+      <div class="status-control">
+        <select class="status-select" aria-label="Status ${escapeHtml(document.request_code)}">
+          ${statusOptions}
+        </select>
+        <button class="secondary-btn status-save" type="button" data-action="update-status" data-id="${escapeHtml(document.id)}" aria-label="Simpan status ${escapeHtml(document.request_code)}">Simpan</button>
+      </div>
+    `;
 
     return `
       <tr>
@@ -336,38 +345,59 @@ function handleStatusCheck(event) {
   showStatusResult(`Nomor ${found.request_code} berstatus: ${found.status}. Gampong: ${found.gampong}.`, 'success');
 }
 
-async function cancelDocument(id, button) {
+async function updateSubmissionStatus(id, status, button) {
   if (!id || button.disabled) return;
+  if (!SUBMISSION_STATUSES.includes(status)) {
+    showStatusResult('Pilih status surat yang tersedia.', 'error');
+    return;
+  }
+
+  const submission = state.documents.find((document) => document.id === id);
+  if (!submission) {
+    showStatusResult('Pengajuan tidak ditemukan. Muat ulang daftar pengajuan.', 'error');
+    return;
+  }
+
+  const previousStatus = submission.status;
+  if (status === previousStatus) {
+    showStatusResult(`Status ${submission.request_code} tidak berubah.`, 'info');
+    return;
+  }
+
+  const select = button.closest('tr').querySelector('.status-select');
   button.disabled = true;
-  button.textContent = 'Membatalkan...';
+  select.disabled = true;
+  button.textContent = 'Menyimpan...';
 
   try {
-    const query = new URLSearchParams({ id: `eq.${id}`, status: 'neq.Batal' });
+    const query = new URLSearchParams({ id: `eq.${id}`, status: `eq.${previousStatus}` });
     const { response, payload } = await requestSupabase(`/rest/v1/submissions?${query}`, {
       method: 'PATCH',
       headers: { Prefer: 'return=representation' },
-      body: JSON.stringify({ status: 'Batal' })
+      body: JSON.stringify({ status })
     });
 
     if (!response.ok || !Array.isArray(payload)) {
       throw new Error(formatSupabaseError(response, payload));
     }
     if (!payload.length) {
-      throw new Error('Pengajuan tidak berubah. Mungkin sudah dibatalkan atau tidak dapat diakses.');
+      throw new Error('Status tidak berubah. Data mungkin sudah diperbarui admin lain; muat ulang pengajuan dan coba lagi.');
     }
 
     state.documents = state.documents.map((document) => (
-      document.id === id ? { ...document, status: 'Batal' } : document
+      document.id === id ? { ...document, status: payload[0].status } : document
     ));
     renderDashboard();
-    showStatusResult(`Pengajuan ${payload[0].request_code} dibatalkan. Statistik telah diperbarui.`, 'success');
+    showStatusResult(`Status ${payload[0].request_code} diubah menjadi ${payload[0].status}. Riwayat ekstensi akan diperbarui otomatis.`, 'success');
     submissionLoadMessage.textContent = 'Status pengajuan telah diperbarui di Supabase.';
     submissionLoadMessage.className = 'result-box success';
   } catch (error) {
-    showStatusResult(error.message || 'Pengajuan tidak dapat dibatalkan.', 'error');
-    console.error('Gagal membatalkan pengajuan SI-JUANG.', error);
+    showStatusResult(error.message || 'Status pengajuan tidak dapat diperbarui.', 'error');
+    console.error('Gagal mengubah status pengajuan SI-JUANG.', error);
     button.disabled = false;
-    button.textContent = 'Batalkan';
+    select.disabled = false;
+    select.value = previousStatus;
+    button.textContent = 'Simpan';
   }
 }
 
@@ -449,8 +479,11 @@ function initializeDashboard() {
   document.getElementById('waRecipient').addEventListener('input', refreshWhatsAppMessage);
   waDocCode.addEventListener('input', refreshWhatsAppMessage);
   tableBody.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-action="cancel"]');
-    if (button) cancelDocument(button.dataset.id, button);
+    const button = event.target.closest('[data-action="update-status"]');
+    if (button) {
+      const select = button.closest('tr').querySelector('.status-select');
+      updateSubmissionStatus(button.dataset.id, select.value, button);
+    }
   });
 
   waDocCode.value = createReferenceCode();
