@@ -70,7 +70,7 @@
           <div class="hero-box">
             <div class="page-title">
               <h2>Ringkasan dokumen dan status surat</h2>
-              <p>Data dapat bertambah atau berkurang saat dokumen masuk atau dibatalkan.</p>
+              <p>Statistik diambil langsung dari pengajuan operator di Supabase.</p>
             </div>
 
             <div class="hero-grid">
@@ -92,19 +92,9 @@
         <section class="dashboard-section view-page hidden" id="view-pelayanan">
           <div class="workflow-grid">
             <div class="panel">
-              <h3>Pengiriman berkas operator</h3>
-              <p class="muted">Berkas tetap berada di Google Drive operator. Bagikan tautannya agar admin dapat mengunduh dan memproses berkas.</p>
-              <form id="documentForm" class="stack-form">
-                <label for="docNo">Nomor / kode surat</label>
-                <input id="docNo" type="text" placeholder="Contoh: SJ-2026-000123" required />
-                <label for="docGampong">Nama gampong</label>
-                <input id="docGampong" type="text" placeholder="Nama gampong" required />
-                <label for="docType">Jenis surat</label>
-                <input id="docType" type="text" placeholder="Contoh: SKU" required />
-                <label for="docDriveLink">Tautan Google Drive</label>
-                <input id="docDriveLink" type="url" placeholder="https://drive.google.com/..." required />
-                <button class="primary-btn" type="submit">Catat Pengajuan</button>
-              </form>
+              <h3>Pengajuan dari operator</h3>
+              <p class="muted">Daftar di bawah diperbarui dari database Supabase. Pengajuan baru dikirim operator melalui ekstensi SI-JUANG.</p>
+              <div id="submissionLoadMessage" class="result-box info" role="status" aria-live="polite">Memuat pengajuan...</div>
             </div>
 
             <div class="panel">
@@ -129,8 +119,7 @@
           </div>
 
           <div class="admin-actions">
-            <button id="addSampleDoc" class="secondary-btn" type="button">Tambah data contoh</button>
-            <button id="cancelLastDoc" class="danger-btn" type="button">Batalkan pengajuan terbaru</button>
+            <button id="refreshSubmissions" class="secondary-btn" type="button">Muat ulang pengajuan</button>
           </div>
 
           <div class="table-wrap">
@@ -165,7 +154,7 @@
         <section class="dashboard-section view-page hidden" id="view-leaderboard">
           <div class="panel">
             <h2>Leaderboard Pengajuan</h2>
-            <p class="muted">Peringkat dihitung dari pengajuan berstatus aktif pada data browser ini. Data belum dibagikan antar perangkat.</p>
+            <p class="muted">Peringkat dihitung dari pengajuan aktif di Supabase. Pengajuan batal tidak dihitung.</p>
             <div class="table-wrap leaderboard-wrap">
               <table>
                 <thead>

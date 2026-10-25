@@ -15,8 +15,7 @@ Web dashboard ditujukan untuk staf kecamatan. Operator gampong hanya menggunakan
 
 ## Status saat ini
 
-Dashboard masih prototipe frontend. Data contoh dan data yang dimasukkan dari browser disimpan di `localStorage` browser tersebut, bukan di database bersama. Karena itu, data belum otomatis terlihat di komputer admin lain dan belum boleh dipakai sebagai catatan resmi.
-Ekstensi operator memakai Supabase Auth dan RPC `submit_document`; jalankan `supabase/operator-submissions.sql` sebelum menguji pengiriman. Dashboard admin saat ini belum membaca tabel `submissions`.
+Dashboard admin membaca pengajuan dan statistik dari tabel Supabase `submissions` menggunakan akun `kecamatan_admin`. Perubahan status Batal juga disimpan ke database. Ekstensi operator memakai Supabase Auth dan RPC `submit_document`; jalankan `supabase/operator-submissions.sql` sebelum menggunakan alur pengajuan.
 
 Alur yang direncanakan:
 
@@ -25,7 +24,7 @@ Alur yang direncanakan:
 3. Admin memproses berkas, kemudian memilih nomor tujuan dan berkas unduhan pada menu WhatsApp.
 4. Halaman membuka WhatsApp Web dengan teks yang sudah disiapkan dan kode referensi di baris terakhir. Admin tetap melampirkan berkas di WhatsApp Web sebelum menekan Kirim.
 
-Data surat masih berupa prototipe lokal di browser; database, sinkronisasi statistik, serta pengiriman dari ekstensi belum aktif. Jangan memasukkan data pribadi atau dokumen resmi ke prototipe ini.
+Data contoh lokal sebelumnya tidak ditampilkan pada dashboard tersambung. Jika Supabase gagal dibaca, dashboard menampilkan pesan error dan tidak mengganti kegagalan dengan angka contoh. Jangan memasukkan data pribadi atau dokumen resmi sebelum kebijakan akses, berbagi Drive, dan retensi disetujui oleh instansi.
 
 ## Menyiapkan login admin Supabase
 
