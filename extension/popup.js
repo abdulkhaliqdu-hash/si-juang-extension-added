@@ -1,6 +1,9 @@
 const SESSION_KEY = 'sijuang-operator-session';
+const HISTORY_REFRESH_INTERVAL_MS = 30_000;
 const $ = (id) => document.getElementById(id);
 let isSubmitting = false;
+let isLoadingHistory = false;
+let historyRefreshTimer = null;
 
 function setMessage(text, type = '') {
   const message = $('message');
@@ -9,6 +12,10 @@ function setMessage(text, type = '') {
 }
 
 function showLogin() {
+  if (historyRefreshTimer) {
+    clearInterval(historyRefreshTimer);
+    historyRefreshTimer = null;
+  }
   $('loginForm').classList.remove('hidden');
   $('submissionForm').classList.add('hidden');
   $('historyPanel').classList.add('hidden');
@@ -19,6 +26,10 @@ function showSubmission(profile, email) {
   $('loginForm').classList.add('hidden');
   $('submissionForm').classList.remove('hidden');
   $('historyPanel').classList.remove('hidden');
+  if (historyRefreshTimer) clearInterval(historyRefreshTimer);
+  historyRefreshTimer = setInterval(() => {
+    if (!document.hidden) refreshSubmissionHistory();
+  }, HISTORY_REFRESH_INTERVAL_MS);
 }
 
 function getServerError(response, payload, fallback) {
@@ -95,6 +106,8 @@ function renderSubmissionHistory(submissions) {
 }
 
 async function loadSubmissionHistory(session) {
+  if (isLoadingHistory) return;
+  isLoadingHistory = true;
   const list = $('historyList');
   const message = $('historyMessage');
   const button = $('refreshHistoryButton');
@@ -126,11 +139,37 @@ async function loadSubmissionHistory(session) {
       throw new Error(getServerError(response, payload, 'Riwayat tidak dapat dimuat'));
     }
     renderSubmissionHistory(payload);
+    const updatedAt = new Intl.DateTimeFormat('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(new Date());
+    message.textContent = payload.length
+      ? `Diperbarui ${updatedAt}.`
+      : `Belum ada pengajuan dari akun ini. Diperbarui ${updatedAt}.`;
   } catch (error) {
     list.replaceChildren();
     message.textContent = error.message || 'Riwayat tidak dapat dimuat. Periksa koneksi lalu coba lagi.';
+    console.error('Gagal memuat riwayat pengajuan SI-JUANG.', error);
   } finally {
+    isLoadingHistory = false;
     button.disabled = false;
+  }
+}
+
+async function refreshSubmissionHistory() {
+  if (isLoadingHistory) return;
+  try {
+    const auth = await getAuthorizedSession();
+    if (auth) {
+      await loadSubmissionHistory(auth.session);
+    } else {
+      showLogin();
+      setMessage('Sesi Anda telah berakhir. Silakan masuk kembali.', 'error');
+    }
+  } catch (error) {
+    $('historyMessage').textContent = error.message || 'Riwayat tidak dapat dimuat.';
+    console.error('Gagal memperbarui riwayat pengajuan SI-JUANG.', error);
   }
 }
 
@@ -458,16 +497,6 @@ $('loginForm').addEventListener('submit', handleLogin);
 $('submissionForm').addEventListener('submit', handleSubmission);
 $('logoutButton').addEventListener('click', handleLogout);
 $('refreshHistoryButton').addEventListener('click', async () => {
-  try {
-    const auth = await getAuthorizedSession();
-    if (auth) {
-      await loadSubmissionHistory(auth.session);
-    } else {
-      showLogin();
-      setMessage('Sesi Anda telah berakhir. Silakan masuk kembali.', 'error');
-    }
-  } catch (error) {
-    $('historyMessage').textContent = error.message || 'Riwayat tidak dapat dimuat.';
-  }
+  await refreshSubmissionHistory();
 });
 restoreSession();
