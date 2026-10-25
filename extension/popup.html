@@ -1,37 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SI-JUANG</title>
-    <style>
-      body { width: 360px; margin: 0; font-family: Arial, sans-serif; background: #f8fafc; color: #1e293b; }
-      .wrap { padding: 18px; }
-      h2 { margin: 0 0 14px; font-size: 20px; }
-      label { display:block; margin:10px 0 6px; font-weight:700; font-size: 12px; }
-      input, button { width: 100%; box-sizing: border-box; border-radius: 10px; padding: 10px 12px; }
-      input { border: 1px solid #dbe3ef; }
-      button { margin-top: 12px; background: linear-gradient(135deg, #0f766e, #14b8a6); color: white; border:0; font-weight:700; cursor:pointer; }
-      .small { font-size: 12px; color: #64748b; }
-      .msg { margin-top: 12px; min-height: 20px; font-size: 12px; }
-      .error { color: #b91c1c; }
-      .success { color: #047857; }
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SI-JUANG Operator</title>
+    <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <div class="wrap">
-      <h2>SI-JUANG</h2>
-      <form id="loginForm">
-        <label>Email</label>
-        <input id="email" type="email" placeholder="operator@email.com" required />
-        <label>Password</label>
-        <input id="password" type="password" placeholder="********" required />
-        <button type="submit">Masuk</button>
+    <header class="header">
+      <img class="logo" src="assets/icon-128.png" alt="" />
+      <div>
+        <h1>SI-JUANG</h1>
+        <p>Portal Operator Gampong</p>
+      </div>
+    </header>
+
+    <main>
+      <form id="loginForm" class="panel" novalidate>
+        <h2>Masuk operator</h2>
+        <p class="hint">Gunakan akun operator yang diberikan oleh admin kecamatan.</p>
+        <label for="email">Email operator</label>
+        <input id="email" type="email" autocomplete="username" required />
+        <label for="password">Kata sandi</label>
+        <input id="password" type="password" autocomplete="current-password" required />
+        <button id="loginButton" type="submit">Masuk</button>
       </form>
 
-      <div id="msg" class="msg"></div>
-      <div class="small" style="margin-top: 14px;">Backend belum disiapkan. Login dan pengiriman dokumen baru dapat digunakan setelah integrasi Supabase.</div>
-    </div>
+      <form id="submissionForm" class="panel hidden" novalidate>
+        <div class="account-row">
+          <div>
+            <h2>Pengajuan berkas</h2>
+            <p id="operatorIdentity" class="hint"></p>
+          </div>
+          <button id="logoutButton" class="text-button" type="button">Keluar</button>
+        </div>
+
+        <label for="jenisSurat">Jenis surat</label>
+        <select id="jenisSurat" required></select>
+
+        <label for="namaPemohon">Nama pemohon</label>
+        <input id="namaPemohon" type="text" maxlength="120" autocomplete="name" required />
+
+        <label for="keterangan">Keterangan <span class="optional">(opsional)</span></label>
+        <textarea id="keterangan" rows="3" maxlength="1000"></textarea>
+
+        <label for="driveUrl">Tautan berkas Google Drive</label>
+        <input
+          id="driveUrl"
+          type="url"
+          placeholder="https://drive.google.com/..."
+          autocomplete="url"
+          required
+        />
+        <p class="hint">Atur akses tautan agar admin kecamatan dapat membuka atau mengunduh berkas.</p>
+
+        <button id="submitButton" type="submit">Kirim pengajuan</button>
+      </form>
+
+      <div id="message" class="message hidden" role="status" aria-live="polite"></div>
+      <p class="footer-note">Berkas tetap berada di Google Drive Anda. Ekstensi hanya mengirim tautan dan data pengajuan.</p>
+    </main>
 
     <script src="config.js"></script>
     <script src="popup.js"></script>

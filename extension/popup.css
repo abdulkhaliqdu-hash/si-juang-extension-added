@@ -1,0 +1,94 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, sans-serif;
+  color: #1e293b;
+  background: #f4f7fb;
+}
+
+* { box-sizing: border-box; }
+body { width: 360px; margin: 0; }
+.header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px 18px;
+  color: #fff;
+  background: #0f4d3a;
+}
+.logo {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #fff;
+  padding: 2px;
+}
+.header h1 { margin: 0; font-size: 17px; letter-spacing: .04em; }
+.header p { margin: 4px 0 0; color: #c9eee0; font-size: 11px; }
+main { padding: 15px; }
+.panel {
+  padding: 17px;
+  border: 1px solid #dce5ee;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+}
+.panel h2 { margin: 0; font-size: 16px; }
+.hint { margin: 6px 0 12px; color: #64748b; font-size: 11px; line-height: 1.5; }
+label { display: block; margin: 11px 0 5px; font-size: 11px; font-weight: 700; }
+input, select, textarea {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #1e293b;
+  font: inherit;
+  font-size: 12px;
+}
+textarea { resize: vertical; }
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid #99f6e4;
+  border-color: #0f766e;
+}
+button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: #0f766e;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+button:hover { background: #0b5f59; }
+button:disabled { cursor: wait; opacity: .65; }
+.account-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.account-row .hint { margin-bottom: 4px; }
+.text-button {
+  width: auto;
+  margin: 0;
+  padding: 5px 0;
+  color: #0f766e;
+  background: transparent;
+}
+.text-button:hover { color: #0b5f59; background: transparent; text-decoration: underline; }
+.optional { color: #64748b; font-weight: 400; }
+.message {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+  color: #1e40af;
+  background: #eff6ff;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.message.error { color: #991b1b; border-color: #fecaca; background: #fef2f2; }
+.message.success { color: #065f46; border-color: #bbf7d0; background: #ecfdf5; }
+.footer-note { margin: 12px 2px 0; color: #64748b; font-size: 10px; line-height: 1.5; }
+.hidden { display: none !important; }
