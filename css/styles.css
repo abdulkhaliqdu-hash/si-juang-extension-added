@@ -40,7 +40,16 @@ button, input, select { font: inherit; }
   background: var(--panel);
   box-shadow: var(--shadow);
 }
-.login-brand { margin-bottom: 20px; color: #fff; }
+.brand-logo { display: block; object-fit: contain; }
+.login-brand { width: min(100%, 220px); height: auto; margin: 0 auto 20px; }
+.sidebar-brand {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 3px;
+}
 .login-eyebrow {
   color: var(--primary);
   font-size: 0.68rem;
@@ -80,11 +89,6 @@ button, input, select { font: inherit; }
   margin-bottom: 18px;
 }
 
-.brand-mark {
-  width: 42px; height: 42px; border-radius: 12px;
-  background: linear-gradient(135deg, #34d399, #0f766e);
-  display: grid; place-items: center; font-weight: 800;
-}
 .brand h1 { margin: 0; font-size: 1.2rem; }
 .brand p { margin: 0; color: #9ec5d7; font-size: 0.65rem; }
 
