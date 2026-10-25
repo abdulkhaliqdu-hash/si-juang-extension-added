@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "SI-JUANG Operator",
-  "version": "1.0.0",
-  "description": "Extension operator untuk mengirim berkas ke dashboard SI-JUANG.",
+  "name": "SI-JUANG Operator Gampong",
+  "version": "1.3.0",
+  "description": "Kirim pengajuan administrasi gampong ke SI-JUANG melalui tautan Google Drive.",
+  "minimum_chrome_version": "102",
   "permissions": ["storage"],
-  "host_permissions": [],
+  "host_permissions": ["https://pgjfslpfgogpwnitsqzo.supabase.co/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
