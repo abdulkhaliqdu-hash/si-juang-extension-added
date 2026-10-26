@@ -11,7 +11,8 @@ const statusResult = document.getElementById('statusResult');
 const whatsappForm = document.getElementById('whatsappForm');
 const waMessage = document.getElementById('waMessage');
 const waDocCode = document.getElementById('waDocCode');
-const waFile = document.getElementById('waFile');
+const waSubmission = document.getElementById('waSubmission');
+const waDriveLink = document.getElementById('waDriveLink');
 const leaderboardBody = document.getElementById('leaderboardBody');
 const pageTitle = document.getElementById('pageTitle');
 const pageSubtitle = document.getElementById('pageSubtitle');
@@ -261,6 +262,26 @@ function renderDashboard() {
   renderStats();
   renderTable();
   renderLeaderboard();
+  renderWhatsAppSubmissions();
+}
+
+function renderWhatsAppSubmissions() {
+  const selectedId = waSubmission.value;
+  waSubmission.replaceChildren(new Option('Pilih pengajuan untuk mengisi tautan Drive', ''));
+  state.documents.forEach((document) => {
+    const option = new Option(
+      `${document.request_code} · ${document.nama_pemohon} · ${document.gampong}`,
+      document.id
+    );
+    waSubmission.add(option);
+  });
+
+  if (state.documents.some((document) => document.id === selectedId)) {
+    waSubmission.value = selectedId;
+  } else if (selectedId) {
+    waSubmission.value = '';
+    waDriveLink.value = '';
+  }
 }
 
 async function loadSubmissions() {
@@ -401,25 +422,43 @@ async function updateSubmissionStatus(id, status, button) {
   }
 }
 
-function createReferenceCode() {
-  const date = new Date();
-  const datePart = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
-  const randomPart = crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().slice(0, 6).padStart(6, '0');
-  return `SJ-${datePart}-${randomPart}`;
+function selectWhatsAppSubmission() {
+  const submission = state.documents.find((document) => document.id === waSubmission.value);
+  if (!submission) return;
+  waDocCode.value = submission.request_code;
+  waDriveLink.value = submission.drive_url;
+  refreshWhatsAppMessage();
+}
+
+function matchWhatsAppSubmissionByCode() {
+  const code = waDocCode.value.trim().toLowerCase();
+  const submission = state.documents.find((document) => document.request_code.toLowerCase() === code);
+  const previousSubmission = state.documents.find((document) => document.id === waSubmission.value);
+
+  if (submission) {
+    waSubmission.value = submission.id;
+    waDriveLink.value = submission.drive_url;
+  } else {
+    waSubmission.value = '';
+    if (previousSubmission && waDriveLink.value === previousSubmission.drive_url) {
+      waDriveLink.value = '';
+    }
+  }
 }
 
 function buildWhatsAppMessage() {
   const recipient = document.getElementById('waRecipient').value.trim() || 'Bapak/Ibu';
   const code = waDocCode.value.trim();
+  const driveLink = getDriveUrl(waDriveLink.value.trim());
   return [
     `Yth. ${recipient},`,
     '',
     'Bersama pesan ini kami sampaikan berkas administrasi SI-JUANG yang telah diproses.',
-    'Mohon berkenan memeriksa berkas terlampir. Jika ada koreksi, silakan membalas pesan ini.',
+    'Silakan periksa berkas melalui tautan Google Drive berikut. Jika ada koreksi, mohon balas pesan ini:',
+    driveLink,
     '',
     'Terima kasih.',
-    '',
-    `Kode referensi: ${code}`
+    ...(code ? ['', `Kode referensi: ${code}`] : [])
   ].join('\n');
 }
 
@@ -431,7 +470,6 @@ function handleWhatsAppSubmit(event) {
   event.preventDefault();
   const rawPhone = document.getElementById('waPhone').value.trim();
   const phone = rawPhone.replace(/[^\d]/g, '');
-  const file = waFile.files[0];
   const result = document.getElementById('waResult');
 
   if (!phone || phone.length < 8 || phone.length > 15) {
@@ -439,23 +477,27 @@ function handleWhatsAppSubmit(event) {
     result.className = 'result-box error';
     return;
   }
-  if (!waDocCode.value.trim()) {
-    waDocCode.value = createReferenceCode();
-    refreshWhatsAppMessage();
-  }
-  if (!file) {
-    result.textContent = 'Pilih berkas yang sudah diunduh. Anda tetap perlu melampirkannya secara manual setelah WhatsApp Web terbuka.';
+  const driveLink = getDriveUrl(waDriveLink.value.trim());
+  if (!driveLink) {
+    result.textContent = 'Pilih pengajuan atau masukkan tautan Google Drive yang valid. Tautan tersebut akan disertakan dalam pesan WhatsApp.';
     result.className = 'result-box error';
     return;
   }
 
+  waDriveLink.value = driveLink;
   const text = waMessage.value.trim();
-  if (!text.endsWith(`Kode referensi: ${waDocCode.value.trim()}`)) {
-    waMessage.value = `${text.replace(/\n*Kode referensi:.*$/s, '').trim()}\n\nKode referensi: ${waDocCode.value.trim()}`;
+  const requiredMessageLines = [
+    ...(!text.includes(driveLink) ? ['Tautan berkas Google Drive:', driveLink] : []),
+    ...(waDocCode.value.trim() && !text.includes(`Kode referensi: ${waDocCode.value.trim()}`)
+      ? [`Kode referensi: ${waDocCode.value.trim()}`]
+      : [])
+  ];
+  if (requiredMessageLines.length) {
+    waMessage.value = `${text}\n\n${requiredMessageLines.join('\n')}`.trim();
   }
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(waMessage.value)}`;
   window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-  result.textContent = `WhatsApp Web dibuka untuk ${phone}. Tambahkan "${file.name}" sebagai lampiran lalu tekan Kirim. Kode referensi ada di baris terakhir pesan.`;
+  result.textContent = `WhatsApp Web dibuka untuk ${phone}. Tautan Google Drive sudah disertakan dalam pesan. Pastikan penerima memiliki izin akses sebelum mengirim.`;
   result.className = 'result-box success';
 }
 
@@ -471,13 +513,13 @@ function initializeDashboard() {
   });
   refreshSubmissionsButton.addEventListener('click', loadSubmissions);
   whatsappForm.addEventListener('submit', handleWhatsAppSubmit);
-  waFile.addEventListener('change', () => {
-    document.getElementById('waFileName').textContent = waFile.files[0]
-      ? `Berkas dipilih: ${waFile.files[0].name}. WhatsApp Web tidak dapat menerima lampiran otomatis dari halaman ini.`
-      : 'Berkas belum dipilih. Lampirkan berkas lagi di WhatsApp Web.';
+  waSubmission.addEventListener('change', selectWhatsAppSubmission);
+  waDriveLink.addEventListener('input', refreshWhatsAppMessage);
+  waDocCode.addEventListener('input', () => {
+    matchWhatsAppSubmissionByCode();
+    refreshWhatsAppMessage();
   });
   document.getElementById('waRecipient').addEventListener('input', refreshWhatsAppMessage);
-  waDocCode.addEventListener('input', refreshWhatsAppMessage);
   tableBody.addEventListener('click', (event) => {
     const button = event.target.closest('[data-action="update-status"]');
     if (button) {
@@ -486,7 +528,6 @@ function initializeDashboard() {
     }
   });
 
-  waDocCode.value = createReferenceCode();
   refreshWhatsAppMessage();
   showView('dashboard');
   showStatusResult('Silakan masukkan nomor surat untuk mengecek status.', 'info');
