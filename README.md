@@ -21,8 +21,8 @@ Alur yang direncanakan:
 
 1. Operator menyimpan berkas di Google Drive operator sendiri.
 2. Operator mengatur akses tautan Drive agar admin dapat membuka/unduh, lalu mengirim tautan dan metadata.
-3. Admin memproses berkas, kemudian memilih nomor tujuan dan berkas unduhan pada menu WhatsApp.
-4. Halaman membuka WhatsApp Web dengan teks yang sudah disiapkan dan kode referensi di baris terakhir. Admin tetap melampirkan berkas di WhatsApp Web sebelum menekan Kirim.
+3. Admin memproses berkas, lalu memilih pengajuan serta memasukkan nomor tujuan pada menu WhatsApp. Tautan Google Drive pengajuan otomatis dimasukkan ke pesan.
+4. Halaman membuka WhatsApp Web dengan teks dan tautan Drive yang sudah disiapkan. Penerima harus memiliki izin membuka tautan; website tidak dapat melampirkan file lokal secara otomatis melalui link WhatsApp.
 
 Data contoh lokal sebelumnya tidak ditampilkan pada dashboard tersambung. Jika Supabase gagal dibaca, dashboard menampilkan pesan error dan tidak mengganti kegagalan dengan angka contoh. Jangan memasukkan data pribadi atau dokumen resmi sebelum kebijakan akses, berbagi Drive, dan retensi disetujui oleh instansi.
 
@@ -41,6 +41,24 @@ Data contoh lokal sebelumnya tidak ditampilkan pada dashboard tersambung. Jika S
 5. Buka **Project Settings → API Keys** dan salin Project URL serta publishable key (atau anon key lama).
 6. Isi nilai `SUPABASE_URL` dan `SUPABASE_PUBLISHABLE_KEY` di `config.js`. Publishable key memang dipakai di browser; jangan pernah memakai service-role/secret key di sini.
 7. Deploy ulang di Vercel. Login hanya menampilkan dashboard untuk user yang memiliki profil `kecamatan_admin`.
+
+## Membuat akun awal operator dan kecamatan
+
+`scripts/create-initial-accounts.mjs` menyiapkan 23 akun operator (satu per gampong yang terdaftar) dan akun `kec_kotajuang@bireuenkab.go.id`. Nama gampong di alamat email ditulis huruf kecil tanpa spasi atau tanda baca, misalnya `bandarbireuen@bireuenkab.go.id`. Script membuat profil `operator` beserta gampongnya; akun kecamatan mendapat role `kecamatan_admin` dan gampong kosong. Akun yang sudah ada tidak dihapus atau diubah kata sandinya, dan profil dengan role/gampong berbeda dibiarkan apa adanya serta dilaporkan untuk diperiksa.
+
+Pastikan `supabase/operator-submissions.sql` sudah berhasil dijalankan. Di PowerShell pada folder proyek, minta admin Supabase menjalankan:
+
+```powershell
+$secureKey = Read-Host "Legacy service_role key Supabase" -AsSecureString
+$env:SUPABASE_SERVICE_ROLE_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password
+$securePassword = Read-Host "Password awal akun operator dan kecamatan" -AsSecureString
+$env:SIJUANG_INITIAL_PASSWORD = [System.Net.NetworkCredential]::new("", $securePassword).Password
+node .\scripts\create-initial-accounts.mjs --dry-run
+node .\scripts\create-initial-accounts.mjs
+Remove-Item Env:\SUPABASE_SERVICE_ROLE_KEY, Env:\SIJUANG_INITIAL_PASSWORD
+```
+
+Periksa daftar email pada langkah simulasi sebelum menjalankan tanpa `--dry-run`. Ambil JWT **legacy `service_role`** dari **Supabase → Project Settings → API Keys** (bukan publishable/anon key), lalu masukkan hanya pada prompt lokal; jangan kirim melalui chat, memasukkannya ke `config.js`, atau commit ke GitHub. Script menggunakan key itu hanya dari environment proses lokal untuk membuat pengguna Auth dan profil, tidak mencetak atau menyimpannya. Semua akun baru memakai password awal yang dimasukkan pada prompt; karena password awal sama untuk semua akun, bagikan secara pribadi kepada pemilik akun dan minta setiap operator serta staf kecamatan menggantinya sebelum mulai menggunakan akun.
 
 SQL memberi user hak baca hanya untuk profil miliknya sendiri; pembuatan/perubahan role tidak diizinkan dari browser. Data aplikasi yang sungguhan tetap perlu tabel dan RLS sendiri sebelum digunakan.
 
