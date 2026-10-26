@@ -99,17 +99,21 @@
 
             <div class="panel">
               <h3>Kirim berkas melalui WhatsApp</h3>
-              <p class="muted">Admin mengunduh berkas dari Drive, lalu memilih berkas di bawah. WhatsApp Web dibuka dengan pesan siap kirim; lampiran tetap perlu ditambahkan manual di WhatsApp.</p>
+              <p class="muted">Pilih pengajuan untuk mengisi tautan Drive secara otomatis. Tautan akan dimasukkan ke pesan WhatsApp; WhatsApp Web tidak mengizinkan lampiran file lokal dikirim otomatis dari halaman ini.</p>
               <form id="whatsappForm" class="stack-form">
+                <label for="waSubmission">Pilih pengajuan</label>
+                <select id="waSubmission">
+                  <option value="">Pilih pengajuan untuk mengisi tautan Drive</option>
+                </select>
                 <label for="waRecipient">Nama penerima (opsional)</label>
                 <input id="waRecipient" type="text" placeholder="Nama Geuchik / pemohon" />
                 <label for="waPhone">Nomor WhatsApp tujuan</label>
                 <input id="waPhone" type="tel" placeholder="62812xxxxxxxx" required />
                 <label for="waDocCode">Kode / nomor surat</label>
-                <input id="waDocCode" type="text" placeholder="Dibuat otomatis jika kosong" />
-                <label for="waFile">Berkas yang sudah diunduh</label>
-                <input id="waFile" type="file" />
-                <div id="waFileName" class="small-text">Berkas belum dipilih. Lampirkan berkas lagi di WhatsApp Web.</div>
+                <input id="waDocCode" type="text" placeholder="Terisi otomatis dari pengajuan" />
+                <label for="waDriveLink">Tautan berkas Google Drive</label>
+                <input id="waDriveLink" type="url" placeholder="Pilih pengajuan atau tempel tautan Drive" required />
+                <div class="small-text">Pastikan penerima WhatsApp memiliki izin untuk membuka tautan Drive.</div>
                 <label for="waMessage">Isi pesan (bisa diedit)</label>
                 <textarea id="waMessage" rows="7"></textarea>
                 <button class="primary-btn" type="submit">Buka WhatsApp Web</button>
