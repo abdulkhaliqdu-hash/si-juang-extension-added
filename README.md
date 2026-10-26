@@ -69,7 +69,7 @@ SQL memberi user hak baca hanya untuk profil miliknya sendiri; pembuatan/perubah
 3. Karena ini situs statis tanpa proses build, biarkan Build Command dan Output Directory kosong/default.
 4. Deploy.
 
-Folder ekstensi bukan bagian dari situs dashboard yang disajikan Vercel. Setelah backend tersedia, ekstensi dapat dimuat di Chrome melalui `chrome://extensions` → **Developer mode** → **Load unpacked** → pilih folder `extension`. Setelah memperbarui source ekstensi, klik **Reload** pada kartu ekstensi di halaman tersebut.
+Folder ekstensi bukan bagian dari situs dashboard yang disajikan Vercel. Ekstensi operator memakai panel Chrome di sisi kanan, bukan popup biasa. Ekstensi memerlukan Chrome versi 116 atau lebih baru. Setelah backend tersedia, ekstensi dapat dimuat di Chrome melalui `chrome://extensions` → **Developer mode** → **Load unpacked** → pilih folder `extension`. Setelah memperbarui source ekstensi, klik **Reload** pada kartu ekstensi di halaman tersebut.
 
 ## Langkah backend berikutnya
 
@@ -88,12 +88,12 @@ Backend direncanakan menggunakan Supabase untuk autentikasi dan penyimpanan meta
 
 4. Gunakan nilai project URL dan **publishable key** pada `extension/config.js`. Key publishable memang terlihat pada extension; jangan pernah menaruh `service_role`/secret key di extension.
 5. Untuk uji lokal, buka `chrome://extensions`, aktifkan **Developer mode**, pilih **Load unpacked**, lalu pilih folder `extension`.
-6. Agar pintasan ekstensi selalu terlihat di toolbar Chrome, klik ikon **Ekstensi** berbentuk puzzle di kanan atas, lalu klik ikon pin di samping **SI-JUANG Operator Gampong**. Chrome tidak mengizinkan ekstensi menyematkan dirinya sendiri; tindakan pin dilakukan pengguna melalui menu Chrome. Panduan ini juga ditampilkan pada popup ekstensi.
+6. Agar pintasan ekstensi selalu terlihat di toolbar Chrome, klik ikon **Ekstensi** berbentuk puzzle di kanan atas, lalu klik ikon pin di samping **SI-JUANG Operator Gampong**. Chrome tidak mengizinkan ekstensi menyematkan dirinya sendiri; tindakan pin dilakukan pengguna melalui menu Chrome. Setelah dipin, klik ikonnya untuk membuka panel SI-JUANG di sisi kanan.
 7. Login dengan akun operator, isi formulir, dan pastikan pemilik Drive membagikan berkas ke admin kecamatan. Extension hanya menyimpan tautan, bukan mengunggah file.
 8. Ekstensi menampilkan 10 pengajuan terakhir dari akun operator yang sedang masuk. Status diperbarui saat popup dibuka dan otomatis setiap 30 detik selama popup tetap terbuka; tombol **Muat ulang** dapat digunakan untuk mengambil perubahan lebih cepat. Riwayat memerlukan tabel `submissions` dan policy operator pada SQL migrasi.
 9. Jika daftar jenis surat atau aturan database berubah, jalankan ulang SQL yang sudah diperbarui di `supabase/operator-submissions.sql`, lalu muat ulang ekstensi melalui `chrome://extensions` → **Reload**. Jika pengiriman gagal, ekstensi menampilkan pesan database beserta kode error untuk membantu diagnosis.
 
-Manifest meminta permission `storage` untuk menyimpan token login sementara pada `chrome.storage.session`. Host permission dibatasi ke satu project Supabase untuk autentikasi dan pengiriman metadata. Tidak ada script/CDN/remote executable code.
+Manifest meminta permission `storage` untuk menyimpan token login sementara pada `chrome.storage.session` dan `sidePanel` untuk menampilkan formulir pengajuan serta riwayat pada panel sisi kanan browser. Host permission dibatasi ke satu project Supabase untuk autentikasi dan pengiriman metadata. Tidak ada script/CDN/remote executable code.
 
 Daftar gampong yang disetujui (23): Bandar Bireuen; Bireuen Meunasah Blang; Bireuen Meunasah Capa; Bireuen Meunasah Dayah; Bireuen Meunasah Reuleut; Bireuen Meunasah Teungku Digadong; Blang Reuling; Blang Tingkeum; Buket Teukueh; Cot Gapu; Cot Jrat; Cot Peutek; Gampong Baro; Geudong Alue; Geudong-Geudong; Geulanggang Baro; Geulanggang Gampong; Geulanggang Kulam; Geulanggang Teungoh; Lhok Awe Teungoh; Pulo Ara Geudong Teungoh; Pulo Kiton; Uteun Reutoh.
 
@@ -112,4 +112,4 @@ Ekstensi Chrome adalah paket ZIP, bukan APK Android. Proyek ini menyiapkan sourc
 4. Kebijakan privasi publik ada pada `privacy.html`. Setelah dashboard dideploy, gunakan URL Vercel untuk halaman itu pada listing.
 5. Submit untuk review Google. Penerbit harus mengisi deklarasi, memberi kontak dukungan yang benar, dan menunggu keputusan review; kelulusan/penerbitan tidak dapat dijamin dari sisi kode.
 
-Catatan listing: single purpose adalah pengajuan berkas administrasi gampong melalui tautan Google Drive. Jelaskan bahwa extension memproses email login, nama gampong, nama pemohon, jenis surat, keterangan opsional, dan tautan Drive; data dikirim ke project Supabase SI-JUANG. Pilih deklarasi **remote code: No**. Host permission Supabase diperlukan untuk login dan mengirim metadata; `storage` diperlukan untuk sesi login. Cantumkan alamat dukungan resmi dan URL kebijakan privasi publik sebelum submit.
+Catatan listing: single purpose adalah pengajuan berkas administrasi gampong melalui tautan Google Drive. Jelaskan bahwa extension memproses email login, nama gampong, nama pemohon, jenis surat, keterangan opsional, dan tautan Drive; data dikirim ke project Supabase SI-JUANG. Pilih deklarasi **remote code: No**. Host permission Supabase diperlukan untuk login dan mengirim metadata; `storage` diperlukan untuk sesi login; `sidePanel` menampilkan alur kerja operator di panel sisi kanan Chrome. Cantumkan alamat dukungan resmi dan URL kebijakan privasi publik sebelum submit.
