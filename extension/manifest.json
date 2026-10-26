@@ -1,18 +1,23 @@
 {
   "manifest_version": 3,
   "name": "SI-JUANG Operator Gampong",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Kirim pengajuan administrasi gampong ke SI-JUANG melalui tautan Google Drive.",
-  "minimum_chrome_version": "102",
-  "permissions": ["storage"],
+  "minimum_chrome_version": "116",
+  "permissions": ["storage", "sidePanel"],
   "host_permissions": ["https://pgjfslpfgogpwnitsqzo.supabase.co/*"],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "assets/icon-16.png",
       "48": "assets/icon-48.png",
       "128": "assets/icon-128.png"
     }
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
   },
   "icons": {
     "16": "assets/icon-16.png",

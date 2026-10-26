@@ -6,7 +6,7 @@
 }
 
 * { box-sizing: border-box; }
-body { width: 360px; margin: 0; }
+body { width: min(360px, 100vw); min-width: 280px; margin: 0 auto; }
 .header {
   display: flex;
   align-items: center;
