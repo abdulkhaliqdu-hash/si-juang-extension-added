@@ -34,7 +34,7 @@ const views = {
   },
   leaderboard: {
     title: 'Leaderboard Pengajuan',
-    subtitle: 'Ringkasan jumlah pengajuan aktif per gampong dari Supabase.'
+    subtitle: 'Peringkat per gampong dihitung hanya dari naskah yang selesai TTE.'
   }
 };
 
@@ -239,7 +239,7 @@ function renderLeaderboard() {
 
   const counts = new Map();
   state.documents.forEach((document) => {
-    if (document.status === 'Batal') return;
+    if (document.status !== 'Selesai TTE') return;
     counts.set(document.gampong, (counts.get(document.gampong) || 0) + 1);
   });
 
@@ -255,7 +255,7 @@ function renderLeaderboard() {
 
   leaderboardBody.innerHTML = rows.length
     ? rows.join('')
-    : '<tr><td colspan="3" class="muted">Belum ada pengajuan aktif.</td></tr>';
+    : '<tr><td colspan="3" class="muted">Belum ada naskah yang selesai TTE.</td></tr>';
 }
 
 function renderDashboard() {
