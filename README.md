@@ -15,7 +15,7 @@ Web dashboard ditujukan untuk staf kecamatan. Operator gampong hanya menggunakan
 
 ## Status saat ini
 
-Dashboard admin membaca pengajuan dan statistik dari tabel Supabase `submissions` menggunakan akun `kecamatan_admin`. Admin dapat mengubah status pengajuan (Verifikasi, Srikandi, Selesai TTE, Ditolak, atau Batal) dari kolom **Ubah status**; perubahan langsung disimpan ke database. Riwayat ekstensi memuat status terbaru saat dibuka dan diperbarui otomatis setiap 30 detik selama popup terbuka. Ekstensi operator memakai Supabase Auth dan RPC `submit_document`; jalankan `supabase/operator-submissions.sql` sebelum menggunakan alur pengajuan.
+Dashboard admin membaca pengajuan dan statistik dari tabel Supabase `submissions` menggunakan akun `kecamatan_admin`. Admin dapat mengubah status pengajuan (Verifikasi, Srikandi, Selesai TTE, Ditolak, atau Batal) dari kolom **Ubah status**; perubahan langsung disimpan ke database. Leaderboard hanya menghitung naskah berstatus **Selesai TTE**. Riwayat ekstensi memuat status terbaru saat dibuka dan diperbarui otomatis setiap 30 detik selama popup terbuka. Ekstensi operator memakai Supabase Auth dan RPC `submit_document`; jalankan `supabase/operator-submissions.sql` sebelum menggunakan alur pengajuan.
 
 Alur yang direncanakan:
 
