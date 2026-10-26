@@ -88,9 +88,10 @@ Backend direncanakan menggunakan Supabase untuk autentikasi dan penyimpanan meta
 
 4. Gunakan nilai project URL dan **publishable key** pada `extension/config.js`. Key publishable memang terlihat pada extension; jangan pernah menaruh `service_role`/secret key di extension.
 5. Untuk uji lokal, buka `chrome://extensions`, aktifkan **Developer mode**, pilih **Load unpacked**, lalu pilih folder `extension`.
-6. Login dengan akun operator, isi formulir, dan pastikan pemilik Drive membagikan berkas ke admin kecamatan. Extension hanya menyimpan tautan, bukan mengunggah file.
-7. Ekstensi menampilkan 10 pengajuan terakhir dari akun operator yang sedang masuk. Status diperbarui saat popup dibuka dan otomatis setiap 30 detik selama popup tetap terbuka; tombol **Muat ulang** dapat digunakan untuk mengambil perubahan lebih cepat. Riwayat memerlukan tabel `submissions` dan policy operator pada SQL migrasi.
-8. Jika daftar jenis surat atau aturan database berubah, jalankan ulang SQL yang sudah diperbarui di `supabase/operator-submissions.sql`, lalu muat ulang ekstensi melalui `chrome://extensions` → **Reload**. Jika pengiriman gagal, ekstensi menampilkan pesan database beserta kode error untuk membantu diagnosis.
+6. Agar pintasan ekstensi selalu terlihat di toolbar Chrome, klik ikon **Ekstensi** berbentuk puzzle di kanan atas, lalu klik ikon pin di samping **SI-JUANG Operator Gampong**. Chrome tidak mengizinkan ekstensi menyematkan dirinya sendiri; tindakan pin dilakukan pengguna melalui menu Chrome. Panduan ini juga ditampilkan pada popup ekstensi.
+7. Login dengan akun operator, isi formulir, dan pastikan pemilik Drive membagikan berkas ke admin kecamatan. Extension hanya menyimpan tautan, bukan mengunggah file.
+8. Ekstensi menampilkan 10 pengajuan terakhir dari akun operator yang sedang masuk. Status diperbarui saat popup dibuka dan otomatis setiap 30 detik selama popup tetap terbuka; tombol **Muat ulang** dapat digunakan untuk mengambil perubahan lebih cepat. Riwayat memerlukan tabel `submissions` dan policy operator pada SQL migrasi.
+9. Jika daftar jenis surat atau aturan database berubah, jalankan ulang SQL yang sudah diperbarui di `supabase/operator-submissions.sql`, lalu muat ulang ekstensi melalui `chrome://extensions` → **Reload**. Jika pengiriman gagal, ekstensi menampilkan pesan database beserta kode error untuk membantu diagnosis.
 
 Manifest meminta permission `storage` untuk menyimpan token login sementara pada `chrome.storage.session`. Host permission dibatasi ke satu project Supabase untuk autentikasi dan pengiriman metadata. Tidak ada script/CDN/remote executable code.
 
