@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SI-JUANG Operator Gampong",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Kirim pengajuan administrasi gampong ke SI-JUANG melalui tautan Google Drive.",
   "minimum_chrome_version": "102",
   "permissions": ["storage"],
